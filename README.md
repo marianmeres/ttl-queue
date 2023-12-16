@@ -13,7 +13,7 @@ $ npm i @marianmeres/ttl-queue
 ```typescript
 import { createTtlQueueStore } from '@marianmeres/ttl-queue';
 
-// using plain strings here as an example, but the enqueued value can be anything
+// Using plain strings here just as an example (the enqueued value can be anything).
 const q = createTtlQueueStore<string>(defaultTtl?);
 
 // fictional example
