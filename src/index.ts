@@ -4,9 +4,9 @@ import { StoreReadable, createDerivedStore, createStore } from '@marianmeres/sto
 interface QueueData<T> {
 	item: T;
 	ttl: number;
-	// for future addons (change ttl for items already in queue)
-	id: string | number;
 	_isHead: boolean; // helper flag
+	// for future addons (e.g. to change ttl for items already in queue)
+	id: string | number;
 }
 
 export interface CreateTtlQueueStoreOptions {
@@ -47,7 +47,7 @@ export const createTtlQueueStore = <T>(
 			_log('_syncHead', _queue[0]);
 			_queue[0]._isHead = true;
 			if (_timer) {
-				_log('Unexpected timer');
+				_log('Unexpected timer present');
 				_resetTimer();
 			}
 			_timer = setTimeout(() => {
