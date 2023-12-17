@@ -1,6 +1,6 @@
 # @marianmeres/ttl-queue
 
-Add things to [queue](<https://en.wikipedia.org/wiki/Queue_(abstract_data_type)>) and have them dequeue sequentially (FIFO) based on their defined expiration (ttl). Read head of the queue as a store value.
+Add things to [queue](<https://en.wikipedia.org/wiki/Queue_(abstract_data_type)>) and have them dequeue sequentially (FIFO) based on their defined expiration (ttl). Read head of the queue as a [store](https://github.com/marianmeres/store) value.
 
 ## Install
 
