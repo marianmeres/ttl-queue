@@ -3,13 +3,7 @@
 	"version": "1.0.1",
 	"description": "",
 	"type": "module",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.js",
-	"browser": "./dist/index.umd.js",
-	"exports": {
-		"require": "./dist/index.cjs",
-		"import": "./dist/index.js"
-	},
+	"exports": "./dist/index.js",
 	"files": [
 		"dist"
 	],
@@ -19,10 +13,12 @@
 		"prettier": "prettier --write \"{src,tests}/**/*.{js,ts,json}\"",
 		"release": "release -v minor",
 		"release:patch": "release -v patch",
-		"test": "node --loader ts-node/esm tests/index.ts",
-		"test:watch": "nodemon --delay 0.5 -q -w \"src/**/*.*\" -w \"tests/**/*.*\" -x \"node --loader ts-node/esm tests/index.ts\" --",
-		"build": "npm run clean && rollup -c",
-		"dev": "npm run clean && rollup -c -w"
+		"xxx-test": "node --loader ts-node/esm tests/index.ts",
+		"xxx-test:watch": "nodemon --delay 0.5 -q -w \"src/**/*.*\" -w \"tests/**/*.*\" -x \"node --loader ts-node/esm tests/index.ts\" --",
+		"test": "test-runner",
+		"test:watch": "nodemon -q -w \"src/**/*.*\" -w \"tests/**/*.*\" -x test-runner --",
+		"build": "npm run clean && tsc",
+		"dev": "npm run clean && tsc --watch"
 	},
 	"repository": {
 		"type": "git",
@@ -45,18 +41,12 @@
 		"@marianmeres/clog": "^1.0.1",
 		"@marianmeres/release": "^1.1.2",
 		"@marianmeres/test-runner": "^2.0.15",
-		"@rollup/plugin-commonjs": "^25.0.7",
-		"@rollup/plugin-node-resolve": "^15.2.3",
-		"@rollup/plugin-terser": "^0.4.4",
-		"@rollup/plugin-typescript": "^11.1.5",
 		"@types/node": "^20.10.4",
 		"mkdirp": "^3.0.1",
 		"nodemon": "^3.0.2",
 		"prettier": "^3.1.1",
 		"rimraf": "^5.0.5",
 		"rollup": "^4.9.0",
-		"ts-node": "^10.9.2",
-		"tslib": "^2.6.2",
 		"typescript": "^5.3.3"
 	}
 }

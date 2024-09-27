@@ -3,18 +3,18 @@ import { TestRunner } from '@marianmeres/test-runner';
 import { strict as assert } from 'node:assert';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createTtlQueueStore } from '../src/index.js';
+import { createTtlQueueStore } from '../dist/index.js';
 
 const clog = createClog(path.basename(fileURLToPath(import.meta.url)));
 const suite = new TestRunner(path.basename(fileURLToPath(import.meta.url)));
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 suite.test('basic flow', async () => {
-	const q = createTtlQueueStore<any>(50, {
+	const q = createTtlQueueStore(50, {
 		// logger: createClog('debug'),
 	});
 
-	let _log: any[] = [];
+	let _log = [];
 	const unsub = q.subscribe((head) => {
 		_log.push([Date.now(), head]);
 	});
@@ -49,11 +49,11 @@ suite.test('basic flow', async () => {
 });
 
 suite.test('with reset', async () => {
-	const q = createTtlQueueStore<any>(50, {
+	const q = createTtlQueueStore(50, {
 		// logger: createClog('debug'),
 	});
 
-	let _log: any[] = [];
+	let _log = [];
 	const unsub = q.subscribe((head) => {
 		head && _log.push(head);
 	});
@@ -78,11 +78,11 @@ suite.test('same ref must not update store value', async () => {
 	const a = { a: 1 };
 	const b = { b: 2 };
 
-	const q = createTtlQueueStore<any>(50, {
+	const q = createTtlQueueStore(50, {
 		// logger: createClog('debug'),
 	});
 
-	let _log: any[] = [];
+	let _log = [];
 	const unsub = q.subscribe((head) => {
 		head && _log.push([Date.now(), head]);
 	});

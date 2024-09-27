@@ -1,1 +1,64 @@
-const e=e=>"function"==typeof e,t=(t,r="")=>{if(!e(t))throw new TypeError(`${r} Expecting function arg`.trim())},r=t=>e(t.subscribe),n=(r=void 0,n=null)=>{const s=t=>e(n?.persist)&&n.persist(t);let i=(()=>{const e=new Map,t=t=>(e.has(t)||e.set(t,new Set),e.get(t)),r=(e,r)=>{if("function"!=typeof r)throw new TypeError("Expecting callback function as second argument");return t(e).add(r),()=>t(e).delete(r)};return{publish:(e,r)=>{t(e).forEach((e=>e(r)))},subscribe:r,subscribeOnce:(e,t)=>{const n=r(e,(e=>{t(e),n()}));return n},unsubscribeAll:t=>e.delete(t)}})(),o=r;s(o);const c=()=>o,u=e=>{o!==e&&(o=e,s(o),i.publish("change",o))};return{set:u,get:c,update:e=>{t(e,"[update]"),u(e(c()))},subscribe:e=>(t(e,"[subscribe]"),e(o),i.subscribe("change",e))}},s=(s=0,i={})=>{const o=(...e)=>i?.logger?.apply(null,[Date.now(),...e]);let c=[];const u=n();let l=null;const b=()=>{l&&(clearTimeout(l),l=null)};let a=0;const p=()=>{c[0]&&!c[0]._isHead&&(o("_syncHead",c[0]),c[0]._isHead=!0,l&&(o("Unexpected timer"),b()),l=setTimeout((()=>{l=null,g()}),c[0].ttl)),u.set(c[0])},g=()=>{o("_dequeue"),c=[...c.slice(1)],p()},{subscribe:h,get:f}=((s,i,o=null)=>{const c=t=>e(o?.persist)&&o.persist(t),u=n(o?.initialValue),l=[];if(s.forEach((e=>{if(!r(e))throw new TypeError("Expecting array of StoreLike objects");e.subscribe((e=>l.push(e)))()})),!e(i))throw new TypeError("Expecting second argument to be the derivative function");if(!i.length||i.length>2)throw new TypeError("Expecting the derivative function to have exactly 1 or 2 arguments");let b=0,a=[];return{get:u.get,subscribe:e=>{t(e,"[derived.subscribe]"),b++||s.forEach(((e,t)=>{a.push(e.subscribe((e=>{l[t]=e,1===i.length?(u.set(i(l)),c(u.get())):i(l,(e=>{u.set(e),c(u.get())}))})))}));const r=u.subscribe(e);return()=>{--b||(a.forEach((e=>e())),a=[]),r()}}}})([u],(([e])=>e?.item));return{subscribe:h,get:f,enqueue:(e,t)=>{t??=s;const r=++a;let n="Expecting positive non-zero number of milliseconds";if("number"!=typeof t)throw new TypeError(`${n} (1)`);if(t<=0)throw new TypeError(`${n} (2)`);return o("enqueue",{item:e,ttl:t,id:r}),c=[...c,{item:e,ttl:t,id:r}],p(),r},reset:()=>{o("reset"),b(),c=[],p()}}};export{s as createTtlQueueStore};
+import { createDerivedStore, createStore } from '@marianmeres/store';
+export const createTtlQueueStore = (defaultTtl = 0, options = {}) => {
+    const _log = (...args) => { var _a; return (_a = options === null || options === void 0 ? void 0 : options.logger) === null || _a === void 0 ? void 0 : _a.apply(null, [Date.now(), ...args]); };
+    //
+    let _queue = [];
+    const _head = createStore();
+    //
+    let _timer = null;
+    const _resetTimer = () => {
+        if (_timer) {
+            clearTimeout(_timer);
+            _timer = null;
+        }
+    };
+    //
+    let _id = 0;
+    const _getId = () => ++_id;
+    //
+    const _syncHead = () => {
+        if (_queue[0] && !_queue[0]._isHead) {
+            _log('_syncHead', _queue[0]);
+            _queue[0]._isHead = true;
+            if (_timer) {
+                _log('Unexpected timer present');
+                _resetTimer();
+            }
+            _timer = setTimeout(() => {
+                _timer = null;
+                _dequeue();
+            }, _queue[0].ttl);
+        }
+        _head.set(_queue[0]);
+    };
+    //
+    const enqueue = (item, ttl) => {
+        ttl !== null && ttl !== void 0 ? ttl : (ttl = defaultTtl);
+        const id = _getId();
+        let err = `Expecting positive non-zero number of milliseconds`;
+        if (typeof ttl !== 'number')
+            throw new TypeError(`${err} (1)`);
+        if (ttl <= 0)
+            throw new TypeError(`${err} (2)`);
+        _log('enqueue', { item, ttl, id });
+        _queue = [..._queue, { item, ttl, id }];
+        _syncHead();
+        return id;
+    };
+    //
+    const _dequeue = () => {
+        _log('_dequeue');
+        _queue = [..._queue.slice(1)];
+        _syncHead();
+    };
+    //
+    const { subscribe, get } = createDerivedStore([_head], ([h]) => h === null || h === void 0 ? void 0 : h.item);
+    //
+    const reset = () => {
+        _log('reset');
+        _resetTimer();
+        _queue = [];
+        _syncHead();
+    };
+    return { subscribe, get, enqueue, reset };
+};

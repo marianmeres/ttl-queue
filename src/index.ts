@@ -10,7 +10,7 @@ interface QueueData<T> {
 }
 
 export interface CreateTtlQueueStoreOptions {
-	logger: (...args) => void;
+	logger: (...args: any[]) => void;
 }
 
 export interface QueueStore<T> extends StoreReadable<T> {
@@ -22,7 +22,7 @@ export const createTtlQueueStore = <T>(
 	defaultTtl: number = 0,
 	options: Partial<CreateTtlQueueStoreOptions> = {}
 ): QueueStore<T> => {
-	const _log = (...args) => options?.logger?.apply(null, [Date.now(), ...args]);
+	const _log = (...args: any[]) => options?.logger?.apply(null, [Date.now(), ...args]);
 
 	//
 	let _queue: QueueData<T>[] = [];
